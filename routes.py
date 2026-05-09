@@ -54,7 +54,9 @@ def register_routes(app):
 
     @app.route('/tag/<tag>')
     def tag(tag):
-        return redirect(url_for('index'))
+        posts = _cache(app)
+        filtered = [p for p in posts if tag in p['tags']]
+        return render_template('tag.html', posts=filtered, tag=tag)
 
     @app.route('/post/<slug>/comment', methods=['POST'])
     def add_comment(slug):
