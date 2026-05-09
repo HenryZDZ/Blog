@@ -65,4 +65,22 @@ def register_routes(app):
 
     @app.route('/post/<slug>/comment', methods=['POST'])
     def add_comment(slug):
+        author = request.form.get('author', '').strip()
+        content = request.form.get('content', '').strip()
+        parent_id = request.form.get('parent_id', type=int)
+
+        if len(author) < 2 or len(author) > 20:
+            abort(400)
+        if len(content) < 1 or len(content) > 1000:
+            abort(400)
+
+        comment = Comment(
+            post_slug=slug,
+            author=author,
+            content=content,
+            parent_id=parent_id,
+        )
+        db.session.add(comment)
+        db.session.commit()
+
         return redirect(url_for('post', slug=slug) + '#comments')
