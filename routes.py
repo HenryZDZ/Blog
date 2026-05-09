@@ -29,7 +29,12 @@ def register_routes(app):
 
     @app.route('/search')
     def search():
-        return redirect(url_for('index'))
+        q = request.args.get('q', '').strip()
+        posts = _cache(app)
+        if not q:
+            return render_template('search.html', posts=[], query='')
+        results = [p for p in posts if q.lower() in p['title'].lower() or any(q.lower() in t.lower() for t in p['tags'])]
+        return render_template('search.html', posts=results, query=q)
 
     @app.route('/post/<slug>')
     def post(slug):
