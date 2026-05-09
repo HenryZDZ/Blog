@@ -84,3 +84,13 @@ def register_routes(app):
         db.session.commit()
 
         return redirect(url_for('post', slug=slug) + '#comments')
+
+    @app.route('/about')
+    def about():
+        return render_template('about.html')
+
+    @app.errorhandler(404)
+    def not_found(e):
+        posts = _cache(app)
+        recent = posts[:10]
+        return render_template('404.html', recent_posts=recent), 404

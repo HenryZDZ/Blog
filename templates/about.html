@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}关于 - {{ config.SITE_NAME }}{% endblock %}
+
+{% block content %}
+<article class="about">
+    <h1>关于</h1>
+    <div class="about-content">
+        <p>{{ config.ABOUT_TEXT }}</p>
+    </div>
+</article>
+{% endblock %}
