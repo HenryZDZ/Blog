@@ -33,8 +33,29 @@ def register_routes(app):
 
     @app.route('/post/<slug>')
     def post(slug):
-        return redirect(url_for('index'))
+        posts = _cache(app)
+        post_data = markdown_utils.get_post(posts, slug)
+        if not post_data:
+            recent = posts[:10]
+            return render_template('404.html', recent_posts=recent), 404
+
+        with open(post_data['filepath'], 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        _, body = markdown_utils.parse_frontmatter(post_data['filepath'])
+        html_body = markdown_utils.render_markdown(body)
+
+        comments = (Comment.query
+                    .filter_by(post_slug=slug, parent_id=None)
+                    .order_by(Comment.created_at.desc())
+                    .all())
+
+        return render_template('post.html', post=post_data, content=html_body, comments=comments)
 
     @app.route('/tag/<tag>')
     def tag(tag):
         return redirect(url_for('index'))
+
+    @app.route('/post/<slug>/comment', methods=['POST'])
+    def add_comment(slug):
+        return redirect(url_for('post', slug=slug) + '#comments')
