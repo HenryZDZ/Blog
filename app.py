@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from models import db
 
@@ -5,7 +7,15 @@ from models import db
 def create_app():
     app = Flask(__name__)
     app.config.from_object('config')
-    app.config['SQLALCHEMY_DATABASE_URI'] = app.config['DATABASE_URI']
+
+    database_uri = app.config['DATABASE_URI']
+    if database_uri.startswith('libsql://'):
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite+libsql://' + database_uri[len('libsql://'):]
+        app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+            'connect_args': {'auth_token': os.environ.get('TURSO_AUTH_TOKEN', '')}
+        }
+    else:
+        app.config['SQLALCHEMY_DATABASE_URI'] = database_uri
 
     db.init_app(app)
 

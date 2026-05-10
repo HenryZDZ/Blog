@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: posts-blog
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:create_app() -w 2 -b 0.0.0.0:$PORT
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: TURSO_AUTH_TOKEN
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true

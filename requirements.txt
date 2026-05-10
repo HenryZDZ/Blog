@@ -1,5 +1,6 @@
 flask==3.1.0
 flask-sqlalchemy==3.1.1
+sqlalchemy-libsql==0.2.0
 markdown==3.7
 pygments==2.18.0
 pyyaml==6.0.2
