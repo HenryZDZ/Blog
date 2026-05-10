@@ -6,15 +6,22 @@
     <title>{% block title %}{{ config.SITE_NAME }}{% endblock %}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/pygments.css') }}">
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     {% block head %}{% endblock %}
 </head>
 <body>
     <nav class="nav">
         <div class="nav-inner">
-            <a href="{{ url_for('index') }}" class="nav-brand">{{ config.SITE_NAME }}</a>
-            <form action="{{ url_for('search') }}" method="get" class="nav-search">
-                <input type="text" name="q" placeholder="搜索文章..." value="{{ request.args.get('q', '') }}">
-            </form>
+            <a href="{{ url_for('index') }}" class="nav-logo">
+                <span class="geo">
+                    <span class="geo-circle"></span>
+                    <span class="geo-square"></span>
+                    <span class="geo-triangle"></span>
+                    <span class="geo-cross"></span>
+                </span>
+                <span class="nav-brand">{{ config.SITE_NAME }}</span>
+            </a>
+            <button id="theme-toggle" class="theme-toggle" title="切换亮色/暗色模式">&#9728;</button>
         </div>
     </nav>
 
@@ -23,7 +30,12 @@
     </main>
 
     <footer class="footer">
-        <p>&copy; {{ config.SITE_NAME }} · powered by Flask</p>
+        <div class="geo">
+            <div class="geo-circle"></div>
+            <div class="geo-square"></div>
+            <div class="geo-triangle"></div>
+            <div class="geo-cross"></div>
+        </div>
     </footer>
 </body>
 </html>
