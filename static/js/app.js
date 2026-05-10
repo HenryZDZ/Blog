@@ -43,7 +43,7 @@
         return identity;
     }
 
-    /* Wire up comment forms: inject hidden author field */
+    /* Wire up comment forms: inject hidden author field and render avatars */
     document.addEventListener('DOMContentLoaded', function () {
         var identity = getIdentity();
         var forms = document.querySelectorAll('.comment-form');
@@ -53,6 +53,28 @@
             hidden.name = 'author';
             hidden.value = identity.name;
             forms[i].appendChild(hidden);
+        }
+
+        var avatars = document.querySelectorAll('.comment-avatar[id^="avatar-"]');
+        for (var j = 0; j < avatars.length; j++) {
+            var el = avatars[j];
+            var num = parseInt(el.id.replace('avatar-', ''), 10) || j;
+            var type = AVATAR_TYPES[num % AVATAR_TYPES.length];
+            var color = AVATAR_COLORS[num % AVATAR_COLORS.length];
+            var typeClass = type + '-avatar';
+            el.classList.add(typeClass);
+
+            if (type === 'cross') {
+                el.style.color = color;
+            } else {
+                var inner = document.createElement('div');
+                if (type === 'triangle') {
+                    inner.style.borderBottomColor = color;
+                } else {
+                    inner.style.background = color;
+                }
+                el.appendChild(inner);
+            }
         }
     });
 
