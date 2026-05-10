@@ -15,6 +15,7 @@
         <div class="post-meta">
             <time>{{ post.date }}</time>
             {% if post.tags %}
+            <span class="meta-dot"></span>
             <span class="post-tags">
                 {% for tag in post.tags %}
                 <a href="{{ url_for('tag', tag=tag) }}" class="tag">{{ tag }}</a>
@@ -27,38 +28,50 @@
     <div class="post-body">
         {{ content | safe }}
     </div>
+
+    {% if post.tags %}
+    <div class="post-tags">
+        {% for tag in post.tags %}
+        <a href="{{ url_for('tag', tag=tag) }}" class="tag">{{ tag }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
 </article>
 
 <section class="comments" id="comments">
-    <h2>评论 ({{ comments | length }})</h2>
+    <h3>评论 ({{ comments | length }})</h3>
 
     <form method="post" action="{{ url_for('add_comment', slug=post.slug) }}" class="comment-form">
-        <input type="text" name="author" placeholder="昵称（必填，2-20字）" maxlength="20" minlength="2" required>
-        <textarea name="content" placeholder="评论内容（必填，1-1000字）" maxlength="1000" minlength="1" required></textarea>
+        <textarea name="content" placeholder="说点什么..." maxlength="1000" required></textarea>
         <button type="submit">提交评论</button>
     </form>
 
     {% for comment in comments %}
     <div class="comment">
-        <div class="comment-author">{{ comment.author }}</div>
-        <div class="comment-time">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
-        <div class="comment-content">{{ comment.content }}</div>
-        <button class="reply-btn" onclick="toggleReply({{ comment.id }})">回复</button>
+        <div class="comment-avatar" id="avatar-{{ comment.id }}"></div>
+        <div class="comment-body">
+            <div class="comment-author">{{ comment.author }}</div>
+            <div class="comment-time">{{ comment.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+            <div class="comment-content">{{ comment.content }}</div>
+            <button class="reply-btn" onclick="toggleReply({{ comment.id }})">回复</button>
 
-        <form method="post" action="{{ url_for('add_comment', slug=post.slug) }}" class="comment-form reply-form" id="reply-form-{{ comment.id }}" style="display:none">
-            <input type="hidden" name="parent_id" value="{{ comment.id }}">
-            <input type="text" name="author" placeholder="昵称（必填，2-20字）" maxlength="20" minlength="2" required>
-            <textarea name="content" placeholder="回复内容" maxlength="1000" required></textarea>
-            <button type="submit">提交回复</button>
-        </form>
+            <form method="post" action="{{ url_for('add_comment', slug=post.slug) }}" class="comment-form reply-form" id="reply-form-{{ comment.id }}">
+                <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                <textarea name="content" placeholder="回复内容" maxlength="1000" required></textarea>
+                <button type="submit">提交回复</button>
+            </form>
 
-        {% for reply in comment.replies %}
-        <div class="comment comment-reply">
-            <div class="comment-author">{{ reply.author }}</div>
-            <div class="comment-time">{{ reply.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
-            <div class="comment-content">{{ reply.content }}</div>
+            {% for reply in comment.replies %}
+            <div class="comment comment-reply">
+                <div class="comment-avatar" id="avatar-{{ reply.id }}"></div>
+                <div class="comment-body">
+                    <div class="comment-author">{{ reply.author }}</div>
+                    <div class="comment-time">{{ reply.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                    <div class="comment-content">{{ reply.content }}</div>
+                </div>
+            </div>
+            {% endfor %}
         </div>
-        {% endfor %}
     </div>
     {% endfor %}
 </section>
@@ -66,7 +79,7 @@
 <script>
 function toggleReply(id) {
     var el = document.getElementById('reply-form-' + id);
-    el.style.display = el.style.display === 'none' ? 'block' : 'none';
+    el.style.display = el.style.display === 'block' ? 'none' : 'block';
 }
 </script>
 {% endblock %}
