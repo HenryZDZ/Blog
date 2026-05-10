@@ -69,6 +69,8 @@ def register_routes(app):
         content = request.form.get('content', '').strip()
         parent_id = request.form.get('parent_id', type=int)
 
+        if not author:
+            author = '屏息者'
         if len(author) < 2 or len(author) > 20:
             abort(400)
         if len(content) < 1 or len(content) > 1000:
