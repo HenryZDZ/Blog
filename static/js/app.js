@@ -5,14 +5,21 @@
     if (saved === 'dark') html.classList.add('dark');
     if (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches) html.classList.add('dark');
 
+    function updateThemeIcon() {
+        var btn = document.getElementById('theme-toggle');
+        if (btn) btn.innerHTML = html.classList.contains('dark') ? '☽' : '☀';
+    }
+
     function toggleTheme() {
         html.classList.toggle('dark');
         localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+        updateThemeIcon();
     }
 
     document.addEventListener('DOMContentLoaded', function () {
         var btn = document.getElementById('theme-toggle');
         if (btn) btn.addEventListener('click', toggleTheme);
+        updateThemeIcon();
     });
 
     /* === Anonymous identity === */
@@ -28,6 +35,15 @@
     var AVATAR_COLORS = ['#e63946', '#2563eb', '#f4d03f', '#1a1a2e', '#10b981'];
 
     function rand(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+    function hashString(s) {
+        var h = 0;
+        for (var i = 0; i < s.length; i++) {
+            h = ((h << 5) - h) + s.charCodeAt(i);
+            h |= 0;
+        }
+        return Math.abs(h);
+    }
 
     function getIdentity() {
         try {
@@ -55,10 +71,10 @@
             forms[i].appendChild(hidden);
         }
 
-        var avatars = document.querySelectorAll('.comment-avatar[id^="avatar-"]');
+        var avatars = document.querySelectorAll('.comment-avatar[data-author]');
         for (var j = 0; j < avatars.length; j++) {
             var el = avatars[j];
-            var num = parseInt(el.id.replace('avatar-', ''), 10) || j;
+            var num = hashString(el.getAttribute('data-author'));
             var type = AVATAR_TYPES[num % AVATAR_TYPES.length];
             var color = AVATAR_COLORS[num % AVATAR_COLORS.length];
             var typeClass = type + '-avatar';

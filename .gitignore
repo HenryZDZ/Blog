@@ -3,3 +3,6 @@ __pycache__/
 blog.db
 .env
 venv/
+.venv/
+.pytest_cache/
+.superpowers/
