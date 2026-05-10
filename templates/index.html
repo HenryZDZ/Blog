@@ -2,6 +2,8 @@
 {% block title %}{{ config.SITE_NAME }}{% endblock %}
 
 {% block content %}
+<p class="intro">{{ config.SITE_DESCRIPTION }}</p>
+
 {% if not posts %}
 <div class="empty-state">
     <h2>还没有文章</h2>
@@ -11,7 +13,6 @@
 <div class="post-list">
     {% for post in posts %}
     <article class="post-card">
-        <h2><a href="{{ url_for('post', slug=post.slug) }}">{{ post.title }}</a></h2>
         <div class="post-meta">
             <time>{{ post.date }}</time>
             {% if post.tags %}
@@ -22,6 +23,7 @@
             </span>
             {% endif %}
         </div>
+        <h2><a href="{{ url_for('post', slug=post.slug) }}">{{ post.title }}</a></h2>
         {% if post.summary %}
         <p class="post-summary">{{ post.summary }}</p>
         {% endif %}
@@ -32,11 +34,30 @@
 {% if total_pages > 1 %}
 <div class="pagination">
     {% if page > 1 %}
-    <a href="{{ url_for('index', page=page-1) }}">← 上一页</a>
+    <a href="{{ url_for('index', page=page-1) }}" class="page-btn">←</a>
+    {% else %}
+    <span class="page-btn disabled">←</span>
     {% endif %}
-    <span>第 {{ page }}/{{ total_pages }} 页</span>
+
+    {% for p in range(1, total_pages + 1) %}
+    {% if p == page %}
+    <span class="page-btn active">{{ p }}</span>
+    {% else %}
+    <a href="{{ url_for('index', page=p) }}" class="page-btn">{{ p }}</a>
+    {% endif %}
+    {% if p < total_pages %}
+    {% if p % 2 == 1 %}
+    <span class="geo-dot circle"></span>
+    {% else %}
+    <span class="geo-dot square"></span>
+    {% endif %}
+    {% endif %}
+    {% endfor %}
+
     {% if page < total_pages %}
-    <a href="{{ url_for('index', page=page+1) }}">下一页 →</a>
+    <a href="{{ url_for('index', page=page+1) }}" class="page-btn">→</a>
+    {% else %}
+    <span class="page-btn disabled">→</span>
     {% endif %}
 </div>
 {% endif %}
