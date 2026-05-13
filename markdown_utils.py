@@ -26,7 +26,20 @@ def parse_frontmatter(filepath):
 
 
 def render_markdown(text):
-    """Convert markdown text to HTML with code highlighting and table support."""
+    """Convert markdown text to HTML with code highlighting and table support.
+    Single newlines are converted to hard line breaks to match Obsidian's
+    live-preview behavior."""
+    # Protect fenced code blocks, then add hard breaks to non-block lines
+    parts = re.split(r'(```[\s\S]*?```)', text)
+    block_re = re.compile(r'^(#{1,6}\s|[-*+]\s|\d+\.\s|>\s|[-*_]{3,})')
+    for i in range(0, len(parts), 2):
+        lines = parts[i].split('\n')
+        parts[i] = '\n'.join(
+            line + '  ' if line.strip() and not block_re.match(line) else line
+            for line in lines
+        )
+    text = ''.join(parts)
+
     md = markdown.Markdown(extensions=[
         'fenced_code',
         'codehilite',

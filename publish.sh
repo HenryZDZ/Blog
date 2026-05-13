@@ -52,6 +52,17 @@ for f in files:
     upload_file "$BLOG_REPO/posts/$filename" "$filename"
 done
 
+# Process renames: delete old filename on remote
+python3 -c "
+import json, sys
+data = json.loads(sys.argv[1])
+for r in data.get('renamed', []):
+    print(r['from'])
+" "$sync_json" | while read -r oldname; do
+    [ -z "$oldname" ] && continue
+    delete_file "$oldname"
+done
+
 # Process removed files
 python3 -c "
 import json, sys
